@@ -1,0 +1,72 @@
+/*
+	该文档测试两个栈模拟一个队列，栈是先进后出，而队列是先进先出，所以一个栈模拟入队列，
+	另一个栈模拟出队列。如1,2,3,4,5,6,7,8,9顺序压栈，模拟入队列，出队列顺序应该跟入栈顺序
+	一致，但是直接弹出的话正好相反，所以需要将元素弹出入另一个栈，即以顺序9,8,7,6,5,4,3,2,1
+	压入另一个栈，在顺序弹出就可以了。但是在弹出时必须要先判断模拟出队列的栈是否为空，不为空
+	则直接弹出，为空的话先将入栈元素压入之后再弹出。
+*/
+#include <iostream>
+#include <stack>
+using namespace std;
+//define a template
+template<typename T>
+struct MyQueue
+{
+	//two stacks,s1 simulate push,s2 simulate pop
+	stack<T> s1;
+	stack<T> s2;
+	//push
+	void push(T &t)
+	{
+		s1.push(t);
+	}
+	//if s2 is empty,taking elements one by one from the top of s1, and push them into s2
+	//or geting elements from the top
+	T front()
+	{
+		if (s2.empty())
+		{
+			if (s1.size() == 0) throw;
+			while (! s1.empty())
+			{
+				s2.push(s1.top());
+				s1.pop();
+			}
+		}
+		return s2.top();
+	}
+	//if s2 is not empty, pop elements directly, or push elememts into it from s1 first
+	void pop()
+	{
+		if (s2.empty())
+		{
+			while (!s1.empty())
+			{
+				s2.push(s1.top());
+				s1.pop();
+			}
+		}
+		if (!s2.empty())
+		{
+			s2.pop();
+		}
+	}
+
+};
+
+//test
+void main()
+{
+	MyQueue<int> queue;
+	int i, j;
+	for ( i = 0; i < 10; i++)
+	{
+		queue.push(i);
+	}
+	for ( j = 0; j < 10; j++)
+	{
+		cout << queue.front() << endl;
+		queue.pop();
+	}
+	system("pause");
+}
